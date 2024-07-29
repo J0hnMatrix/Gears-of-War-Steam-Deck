@@ -33,15 +33,8 @@ do_step() {
 }
 
 setup_downloads() {
-    # check or download gfwl and launcher hack
+    # check or download launcher hack
     echo checking downloads:
-    if  [ -f "./dl/gfwl.exe" ]; then
-        echo file [gfwl.exe] exists
-    else
-        wget https://archive.org/download/gfwlive/gfwlivesetup.exe \
-        -O dl/gfwl.exe
-    fi
-
     if  [ -f "./dl/default.htm" ]; then
         echo file [default.htm] exists
     else
@@ -57,15 +50,6 @@ configure_prefix() {
     protontricks -v $appid \
         arial physx xact_x64 d3dx9 d3dx10 d3dx10_43 d3dcompiler_42 d3dcompiler_43 d3dcompiler_46 d3dcompiler_47
 
-    echo
-}
-
-install_gfwl() {
-    # installing gfwl
-    echo installing GFWL..
-    STEAM_COMPAT_CLIENT_INSTALL_PATH="$steampath" \
-    STEAM_COMPAT_DATA_PATH=$(dirname "$(realpath $WINEPREFIX)") \
-    proton run ./dl/gfwl.exe
     echo
 }
 
@@ -103,7 +87,7 @@ if [ $# -eq 0 ]
     exit 1
 fi
 appid=$APPID
-NUMSTEPS="5"
+NUMSTEPS="4"
 
 
 # checking dl directory
@@ -149,30 +133,21 @@ echo
 echo -e "${WHITE}---------------------------------------------------------------------------${NC}"
 echo -e "${WHITE}STEP 0/$NUMSTEPS Done.${NC} Next: downloading gfwl and launcher patch"
 
-
 do_step setup_downloads $2
 echo -e "${WHITE}---------------------------------------------------------------------------${NC}"
 echo -e "${WHITE}STEP 1/$NUMSTEPS Done.${NC} Next: installing dependencies with protontricks"
-
 
 do_step configure_prefix $2
 echo -e "${WHITE}---------------------------------------------------------------------------${NC}"
 echo -e "${WHITE}STEP 2/$NUMSTEPS Done.${NC} Next: patching the game launcher"
 
-
 do_step fix_launcher $2
 echo -e "${WHITE}---------------------------------------------------------------------------${NC}"
 echo -e "${WHITE}STEP 3/$NUMSTEPS Done.${NC} Next: final prefix changes"
 
-
 do_step finalize_prefix $2
 echo -e "${WHITE}---------------------------------------------------------------------------${NC}"
 echo -e "${WHITE}STEP 4/$NUMSTEPS Done.${NC} Next: installing GFWL"
-
-do_step install_gfwl $2
-echo -e "${WHITE}---------------------------------------------------------------------------${NC}"
-echo -e "${WHITE}STEP 5/$NUMSTEPS Done.${NC}"
-echo
 
 echo -e "${WHITE}set your game launch parameters in Steam to the following:${NC}"
 echo -e "${YELLOW}PROTON_NO_ESYNC=1 PROTON_NO_FSYNC=1 %command%${NC}"
